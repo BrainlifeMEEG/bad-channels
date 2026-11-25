@@ -1,5 +1,58 @@
 # app-bad-channels
 
+<!-- brainlife-app:begin (generated from the App manifest; edit the manifest, not this block) -->
+
+> **Detects noisy and flat MEG channels with MNE-Python find_bad_channels_maxwell (Signal Space Separation without applying the filter) and outputs a BIDS channels.tsv marking them bad plus an HTML report.**
+
+Runs mne.preprocessing.find_bad_channels_maxwell on a FIF recording, optionally using the site fine-calibration and cross-talk files, head position and destination files, and carries over channels already marked bad in an input channels.tsv. Use it before Maxwell filtering (MaxFilter/SSS) so that artefacts in bad channels do not spread. Elekta/MEGIN (Neuromag) MEG data are expected; param_return_scores must stay true for the report.
+
+| | |
+|---|---|
+| 📥 **Inputs** | `neuro/meg/fif` · `neuro/meg/fif-override` (optional) |
+| 📤 **Outputs** | `neuro/meg/fif-override` · `report/html` |
+| 🐳 **Container** | `brainlife/mne:0.23dev` |
+| ⚙️ **Resources** | 1 CPUs |
+| 🔗 **Run it** | [doi.org/10.25663/brainlife.app.494](https://doi.org/10.25663/brainlife.app.494) |
+
+#### 📥 Inputs
+
+| Input | Datatype | Required | Description |
+|---|---|---|---|
+| `fif01` | `neuro/meg/fif` | yes | MEG data in fif format in which we want to find bad channels. |
+| `opt01` | `neuro/meg/fif-override` | no | Optional head positions stored in a headshape.pos file and destination file in fif format, containing the mean transformation matrix. The headshape.pos file is obtained with app-head-pos and the destination.fif file is obtained with app-mean-transformation-matrix. This headshape.pos will override the headshape.pos linked to the neuro/meg/fif datatype. |
+
+#### 📤 Outputs
+
+| Output | Datatype | Description |
+|---|---|---|
+| `out_dir_bad_channels` | `neuro/meg/fif-override` | channels.tsv file (in a BIDS compliant structure) in which bad channels detected by the App are marked as bad. |
+| `out_dir_report` | `report/html` | HTML report with plots of the signals in time and frequency domains. |
+
+<details>
+<summary><b>⚙️ Parameters</b> (15)</summary>
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `param_origin` | string | `auto` | Origin of internal and external multipolar moment space in meters. Can be "auto" or three numbers separated by a comma (example: 0, 0, 0). |
+| `param_duration` | number | `5` | Duration of the segments into which to slice the data for processing, in seconds. It can be a float. |
+| `param_min_count` | number | `5` | Minimum number of times a channel must show up as bad in a chunk. This value must be an integer. |
+| `param_limit` | number | `7` | Detection limit for noisy segments. This value can be a float. |
+| `param_h_freq` | number | `40` | Optional the cutoff frequency (in Hz) of the low-pass filter that will be applied before processing the data. This value can be a float. |
+| `param_return_scores` | boolean | `true` | If True, return a dictionary with scoring information for each evaluated segment of the data. Default in MNE is False but here it must be True. |
+| `param_int_order` | number | `8` | Order of internal component of spherical expansion. This value is an integer. |
+| `param_ext_order` | number | `3` | order of external component of spherical expansion. This value is an integer. |
+| `param_coord_frame` | enum | `head` | The coordinate frame that the origin is specified in, either 'meg' or 'head'. Options: `meg`, `head`. |
+| `param_regularize` | enum | `in` | The destination location for the head, either in or None. Options: `in`. |
+| `param_ignore_ref` | boolean | `false` | If True, do not include reference channels in compensation. |
+| `param_mag_scale` | string | `100` | The magenetometer scale-factor used to bring the magnetometers to approximately the same order of magnitude as the gradiometers, as they have different units (T vs T/m). This value can be a float or "auto". |
+| `param_bad_condition` | enum | `error` | How to deal with ill-conditioned SSS matrices, either 'error', 'warning', 'info' , 'ignore'. Options: `error`, `warning`, `info`, `ignore`. |
+| `param_skip_by_annotation` | string | `[edge, bad acq skip]` | Any annotation segment that begins with the given string will not be included in filtering, and segments on either side of the given excluded annotated segment will be filtered separately. Can be an empty list []. |
+| `param_extended_proj` | string | `[]` | The empty-room projection vectors used to extend the external SSS basis (i.e., use eSSS). |
+
+</details>
+
+<!-- brainlife-app:end -->
+
 Repository of a Brainlife App that detects bad channels in MEG recordings using [`mne.preprocessing.find_bad_channels_maxwell`](https://mne.tools/stable/generated/mne.preprocessing.maxwell_filter.html#mne.preprocessing.maxwell_filter).
 
 # app-bad-channels documentation
